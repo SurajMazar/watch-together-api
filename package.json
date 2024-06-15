@@ -7,7 +7,7 @@
         "start": "node ./build/app.js",
         "start:dev": "nodemon ./build/app.js",
         "watch": "tsc --watch",
-        "build": "tsc build",
+        "build": "tsc --build",
         "prettier:format": "prettier --write ./**/*.{ts,json} && git add .",
         "lint": "eslint src",
         "test": "echo \"Error: no test specified\" && exit 1",
