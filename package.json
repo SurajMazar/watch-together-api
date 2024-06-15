@@ -1,0 +1,37 @@
+{
+    "name": "wt-api",
+    "version": "1.0.0",
+    "description": "simple watch together backend api",
+    "main": "build/server.js",
+    "scripts": {
+        "start": "node ./build/app.js",
+        "start:dev": "nodemon ./build/app.js",
+        "watch": "tsc --watch",
+        "build": "tsc build",
+        "prettier:format": "prettier --write ./**/*.{ts,json} && git add .",
+        "lint": "eslint src",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "prepare": "husky"
+    },
+    "author": "suraz",
+    "license": "MIT",
+    "dependencies": {
+        "dotenv": "^16.4.5",
+        "eslint": "^9.5.0",
+        "express": "^4.19.2"
+    },
+    "engines": {
+        "node": ">=20.0.0"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.5.0",
+        "@types/express": "^4.17.21",
+        "@types/node": "^20.14.2",
+        "globals": "^15.4.0",
+        "husky": "^9.0.11",
+        "nodemon": "^3.1.3",
+        "prettier": "^3.3.2",
+        "typescript": "^5.4.5",
+        "typescript-eslint": "^7.13.0"
+    }
+}
