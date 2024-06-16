@@ -1,6 +1,10 @@
 import express, {Express} from "express";
 import appConfig from "../core/config/app.config";
 import HandleGlobalException from "../core/exception/handler";
+import AppError from "../core/exception/error/app.error";
+import {StatusCodes} from "http-status-codes";
+import {CustomRequest} from "../@types/http/middleware";
+import AuthRoutes from "../http/routes/api/auth.routes";
 
 class Bootstrap {
     protected app: Express;
@@ -15,34 +19,29 @@ class Bootstrap {
 
     private serverInit() {
 
-        this.app.get('/', (_, res) => {
+        this.app.get('/', (req: CustomRequest, res) => {
             res.json({
-                message: `Hello from ${appConfig.APP_NAME}`
+                message: `Hello from ${appConfig.APP_NAME}`,
+                user: req?.user
             })
         })
 
-        /**
-         * HANDLING GLOBAL EXCEPTION
-         */
+        /** AUTH ROUTES */
+        this.app.use('/api', AuthRoutes)
+
+        /*** HANDLING 404 ROUTES */
+        this.app.use('*', (_, __, next) => {
+            next(new AppError('Not found', StatusCodes.NOT_FOUND))
+        })
+
+        /** HANDLING GLOBAL EXCEPTION */
         this.handleGlobalException()
 
-        /**
-         * HANDLING 404 ROUTES
-         */
-        this.app.use('*', (_, res) => {
-            res.json({
-                message: 'Not found.'
-            })
-        })
 
-        /**
-         * START SERVER
-         */
+        /** START SERVER */
         this.app.listen(appConfig.APP_PORT)
 
-        /**
-         * MESSAGE - EASY FOR DEVELOPMENT
-         */
+        /** MESSAGE - EASY FOR DEVELOPMENT */
         console.log(`Application started at http://localhost:${appConfig.APP_PORT}`)
     }
 

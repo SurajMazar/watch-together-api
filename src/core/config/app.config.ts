@@ -7,6 +7,7 @@ import {env} from "../utils/common.utils";
 const appConfig: AppConfigInterface = {
     APP_NAME: env('APP_NAME', 'watch-together'),
     JWT_SECRET: env('JWT_SECRET', 'random'),
-    APP_PORT: env('APP_PORT', 2757)
+    APP_PORT: env('APP_PORT', 2757),
+    JWT_EXPIRY: env('JWT_EXPIRY', '1d')
 }
 export default appConfig
