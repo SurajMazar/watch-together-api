@@ -1,6 +1,6 @@
 import {FailureResponseInterface, SuccessResponseInterface} from "../../@types/core/utils";
-import {Response} from "express";
 import {StatusCodes} from "http-status-codes";
+import {FastifyReply} from "fastify";
 
 /**
  *
@@ -10,7 +10,7 @@ import {StatusCodes} from "http-status-codes";
  * @param meta
  * @param statusCode
  */
-export const successResponse = <T, U>(res: Response, message: string, payload: T | null = null, meta: U | null = null, statusCode: number = StatusCodes.OK) => {
+export const successResponse = <T, U>(res: FastifyReply, message: string, payload: T | null = null, meta: U | null = null, statusCode: number = StatusCodes.OK) => {
     const responseData: SuccessResponseInterface<T, U> = {
         success: true,
         message
@@ -24,11 +24,11 @@ export const successResponse = <T, U>(res: Response, message: string, payload: T
         responseData.meta = meta
     }
 
-    return res.status(statusCode).json(responseData)
+    return res.status(statusCode).send(responseData)
 }
 
 
-export const failureResponse = <T>(res: Response, message: string, payload: T | null = null, statusCode: number = StatusCodes.BAD_REQUEST) => {
+export const failureResponse = <T>(res: FastifyReply, message: string, payload: T | null = null, statusCode: number = StatusCodes.BAD_REQUEST) => {
     const responseData: FailureResponseInterface<T> = {
         success: false,
         message
@@ -38,5 +38,5 @@ export const failureResponse = <T>(res: Response, message: string, payload: T | 
         responseData.data = payload
     }
 
-    return res.status(statusCode).json(responseData)
+    return res.status(statusCode).send(responseData)
 }

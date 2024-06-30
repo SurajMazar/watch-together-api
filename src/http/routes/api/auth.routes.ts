@@ -1,13 +1,12 @@
-import {Router} from 'express'
-import AuthRequest from "../../requests/auth.request";
+import {FastifyInstance} from "fastify";
 import AuthController from "../../controllers/auth.controller";
 
-/**
- * ROUTER INITIALIZATION
- */
-const route = Router()
+const authRoutes = async (fastify: FastifyInstance) => {
 
-/** LOGIN ROUTE */
-route.post('/login', AuthRequest.getValidators(), AuthRequest.validateResults, new AuthController().login)
+    /** LOGIN  */
+    fastify.post('/login', new AuthController().login)
 
-export default route
+}
+
+
+export default authRoutes

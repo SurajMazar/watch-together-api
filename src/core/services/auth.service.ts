@@ -23,7 +23,11 @@ class AuthService {
 
         return {
             user,
-            token: jwt.sign(user, appConfig.JWT_SECRET, {expiresIn: appConfig.JWT_EXPIRY})
+            token: jwt.sign({
+                id: user?.id.toString(),
+                name: user?.name,
+                email: user?.email
+            }, appConfig.JWT_SECRET, {expiresIn: appConfig.JWT_EXPIRY})
         }
     }
 }

@@ -1,23 +1,19 @@
 import AuthService from "../../core/services/auth.service";
-import {NextFunction, Request, Response} from "express";
 import {successResponse} from "../../core/utils/response.utils";
+import {FastifyReply, FastifyRequest} from "fastify";
 
+interface LoginRequestBody {
+    email: string,
+    password: string
+}
+
+const authService = new AuthService()
 class AuthController {
 
-    protected authService: AuthService;
-
-    constructor() {
-        this.authService = new AuthService()
-    }
-
-    async login(req: Request, res: Response, next: NextFunction) {
-        try {
-            const {email, password} = req.body
-            const payload = await this.authService.login(email, password)
-            return successResponse(res, "Login success.", payload)
-        } catch (exception) {
-            next(exception)
-        }
+    async login(request: FastifyRequest, response: FastifyReply) {
+        const {email, password} = request.body as LoginRequestBody
+        const payload = await authService.login(email, password)
+        return successResponse(response, "Login success.", payload)
     }
 
 }

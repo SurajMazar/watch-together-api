@@ -1,15 +1,11 @@
-import BaseRequest from "./base.request";
-import {body} from "express-validator";
+import Joi from "joi";
 
-class AuthRequest extends BaseRequest {
+export const LoginRequestSchema = {
+    schema: {
+        body: Joi.object().keys({
+            email: Joi.string().required().email(),
+            password: Joi.string().min(6)
+        }).required(),
 
-    static getValidators() {
-        return [
-            body('email').notEmpty().isEmail(),
-            body('password').notEmpty()
-        ];
     }
 }
-
-
-export default AuthRequest

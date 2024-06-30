@@ -1,48 +1,29 @@
-import express, {Express} from "express";
+import Fastify, {FastifyInstance} from 'fastify'
 import appConfig from "../core/config/app.config";
-import HandleGlobalException from "../core/exception/handler";
-import AppError from "../core/exception/error/app.error";
-import {StatusCodes} from "http-status-codes";
-import {CustomRequest} from "../@types/http/middleware";
-import AuthRoutes from "../http/routes/api/auth.routes";
+import authRoutes from "../http/routes/api/auth.routes";
 
 class Bootstrap {
-    protected app: Express;
+    protected fastifyApp: FastifyInstance
 
     constructor() {
-        this.app = express()
+        this.fastifyApp = Fastify({
+            logger: true
+        })
     }
 
-    init() {
+    async init() {
         this.serverInit()
+        await this.startServer()
     }
 
     private serverInit() {
-
-        this.app.get('/', (req: CustomRequest, res) => {
-            res.json({
-                message: `Hello from ${appConfig.APP_NAME}`,
-                user: req?.user
+        this.fastifyApp.get('/', (request, reply) => {
+            return reply.send({
+                message: "Hello from fastify."
             })
         })
 
-        /** AUTH ROUTES */
-        this.app.use('/api', AuthRoutes)
-
-        /*** HANDLING 404 ROUTES */
-        this.app.use('*', (_, __, next) => {
-            next(new AppError('Not found', StatusCodes.NOT_FOUND))
-        })
-
-        /** HANDLING GLOBAL EXCEPTION */
-        this.handleGlobalException()
-
-
-        /** START SERVER */
-        this.app.listen(appConfig.APP_PORT)
-
-        /** MESSAGE - EASY FOR DEVELOPMENT */
-        console.log(`Application started at http://localhost:${appConfig.APP_PORT}`)
+        this.fastifyApp.register(authRoutes, {prefix: '/api/auth'})
     }
 
     /**
@@ -50,7 +31,23 @@ class Bootstrap {
      * @private
      */
     private handleGlobalException() {
-        this.app.use(new HandleGlobalException().handler)
+        // this.app.use(new HandleGlobalException().handler)
+    }
+
+    /**
+     * START THE FASTIFY SERVER
+     * @private
+     */
+    private async startServer() {
+        try {
+            const address = await this.fastifyApp.listen({
+                port: appConfig.APP_PORT
+            })
+            this.fastifyApp.log.info(`server listening on ${address}`)
+        } catch (exception) {
+            this.fastifyApp.log.error(exception)
+            process.exit(1)
+        }
     }
 
 }
