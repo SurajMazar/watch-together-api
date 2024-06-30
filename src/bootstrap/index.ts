@@ -1,49 +1,29 @@
-import express, {Express} from "express";
+import Fastify, {FastifyInstance} from 'fastify'
 import appConfig from "../core/config/app.config";
-import HandleGlobalException from "../core/exception/handler";
+import authRoutes from "../http/routes/api/auth.routes";
 
 class Bootstrap {
-    protected app: Express;
+    protected fastifyApp: FastifyInstance
 
     constructor() {
-        this.app = express()
+        this.fastifyApp = Fastify({
+            logger: true
+        })
     }
 
-    init() {
+    async init() {
         this.serverInit()
+        await this.startServer()
     }
 
     private serverInit() {
-
-        this.app.get('/', (_, res) => {
-            res.json({
-                message: `Hello from ${appConfig.APP_NAME}`
+        this.fastifyApp.get('/', (request, reply) => {
+            return reply.send({
+                message: "Hello from fastify."
             })
         })
 
-        /**
-         * HANDLING GLOBAL EXCEPTION
-         */
-        this.handleGlobalException()
-
-        /**
-         * HANDLING 404 ROUTES
-         */
-        this.app.use('*', (_, res) => {
-            res.json({
-                message: 'Not found.'
-            })
-        })
-
-        /**
-         * START SERVER
-         */
-        this.app.listen(appConfig.APP_PORT)
-
-        /**
-         * MESSAGE - EASY FOR DEVELOPMENT
-         */
-        console.log(`Application started at http://localhost:${appConfig.APP_PORT}`)
+        this.fastifyApp.register(authRoutes, {prefix: '/api/auth'})
     }
 
     /**
@@ -51,7 +31,23 @@ class Bootstrap {
      * @private
      */
     private handleGlobalException() {
-        this.app.use(new HandleGlobalException().handler)
+        // this.app.use(new HandleGlobalException().handler)
+    }
+
+    /**
+     * START THE FASTIFY SERVER
+     * @private
+     */
+    private async startServer() {
+        try {
+            const address = await this.fastifyApp.listen({
+                port: appConfig.APP_PORT
+            })
+            this.fastifyApp.log.info(`server listening on ${address}`)
+        } catch (exception) {
+            this.fastifyApp.log.error(exception)
+            process.exit(1)
+        }
     }
 
 }

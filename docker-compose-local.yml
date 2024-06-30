@@ -1,0 +1,26 @@
+version: '3.7'
+services:
+  wt_postgres:
+    image: 'postgres:15'
+    container_name: 'postgres_15_wt'
+    environment:
+      POSTGRES_PASSWORD: 'root'
+      POSTGRES_DB: 'wt_db'
+      POSTGRES_USER: 'root'
+    ports:
+      - '5431:5431'
+    command: -p 5431
+    volumes:
+      - postgres-data-wt:/var/lib/postgresql/data
+      - postgres-init-wt:/docker-entrypoint-initdb.d
+      - ./sql:/sql
+    restart: always
+    networks:
+      - WT_API
+
+networks:
+  WT_API:
+    driver: bridge
+volumes:
+  postgres-data-wt:
+  postgres-init-wt:
