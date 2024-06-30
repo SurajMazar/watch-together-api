@@ -1,6 +1,5 @@
-import {NextFunction, Request, Response} from 'express'
-import AppError from "../../../core/exception/error/app.error";
+import {FastifyError, FastifyReply, FastifyRequest} from "fastify";
 
 export interface HandleGlobalExceptionInterface {
-    handler<T extends AppError>(error: T, req: Request, res: Response, next: NextFunction): Response | void
+    handler(error: FastifyError, req: FastifyRequest, res: FastifyReply)
 }
