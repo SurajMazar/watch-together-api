@@ -1,6 +1,8 @@
 import Fastify, {FastifyInstance} from 'fastify'
 import appConfig from "../core/config/app.config";
 import authRoutes from "../http/routes/api/auth.routes";
+import HandleGlobalException from "../core/exception/handler";
+import {ValidatorCompiler} from "../http/requests/validatorCompiler";
 
 class Bootstrap {
     protected fastifyApp: FastifyInstance
@@ -12,6 +14,8 @@ class Bootstrap {
     }
 
     async init() {
+        this.registerPlugins()
+        this.handleGlobalException()
         this.serverInit()
         await this.startServer()
     }
@@ -31,7 +35,7 @@ class Bootstrap {
      * @private
      */
     private handleGlobalException() {
-        // this.app.use(new HandleGlobalException().handler)
+        this.fastifyApp.setErrorHandler(new HandleGlobalException().handler)
     }
 
     /**
@@ -48,6 +52,10 @@ class Bootstrap {
             this.fastifyApp.log.error(exception)
             process.exit(1)
         }
+    }
+
+    private registerPlugins() {
+        this.fastifyApp.setValidatorCompiler(ValidatorCompiler)
     }
 
 }
